@@ -1,0 +1,11 @@
+transformers>=4.38 # Or check version compatibility with the model/llama-stack
+torch>=2.1 # Check CUDA compatibility for your instance/driver
+accelerate # Often needed by transformers for device mapping
+llama-stack-client # Since you installed this
+python-dotenv # Good practice for config/secrets
+# Add other potential libraries:
+# numpy
+# tqdm # For progress bars
+# pypdf2 # If you plan to handle PDFs
+# sentencepiece # Often needed by tokenizers
+# protobuf # Often needed
