@@ -143,7 +143,6 @@ def map_scores_to_sentences(aggregated_scores, prompt_text, token_offsets, docum
 
     # --- Tokenize the prompt text into sentences ---
     try:
-        # This is the line that failed - it should now find the 'punkt' resource
         sentences = nltk.sent_tokenize(prompt_text)
         print(f"[AttnProc] Found {len(sentences)} sentences in prompt.")
     except Exception as e:
