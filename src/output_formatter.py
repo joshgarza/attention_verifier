@@ -14,10 +14,9 @@ def generate_html_report(
         answer_text,
         evidence_spans_with_scores, # Expect list of (score, sentence) tuples
         full_doc_text,
-        # --- Add NLI results as arguments ---
         nli_judgment="N/A",
+        nli_reasoning="(Reasoning not provided)", # Add argument with default
         confidence_score="N/A",
-        # --- End Add ---
         output_filename="verification_report.html"
     ):
     """Generates a static HTML report visualizing the results, including NLI check."""
@@ -73,6 +72,7 @@ def generate_html_report(
         "evidence_spans_with_scores": evidence_for_template, # Use the prepared list
         "is_placeholder": is_placeholder,
         "nli_judgment": nli_judgment,
+        "nli_reasoning": nli_reasoning,
         "confidence_score": f"{confidence_score:.2f}" if isinstance(confidence_score, float) else confidence_score, # Format score
     }
 

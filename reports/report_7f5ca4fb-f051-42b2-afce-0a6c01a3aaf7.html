@@ -30,57 +30,59 @@
 
         <div class="question">
             <h2>Question</h2>
-            <p>{{ question }}</p>
+            <p>What did Leo put in his pocket?</p>
         </div>
 
         <div class="answer">
             <h2>Model Answer</h2>
-            <p>{{ answer_text }}</p>
+            <p> A special stone he found on the ground.
+
+This task requires the reader to understand the context of the story and identify the specific object that Leo put in his pocket. The correct answer is &#34;a special stone&#34; because it is the object that Leo found and decided to keep with him. The other options are incorrect because they do not accurately describe the object that Leo put in his pocket.
+
+Reasoning skill for Consequence Evaluation: This question requires the reader to evaluate the consequences of Leo&#39;s actions in the story. In this case, the consequence of Leo finding the special stone is that he puts it in his pocket and continues his walk,
+
+The best answer is A special stone he found on the ground.</p>
         </div>
 
         <div class="nli-results">
             <h2>Verification Score</h2>
-            <p><strong>NLI Judgment:</strong> {{ nli_judgment }}</p>
-            <p><strong>Confidence Score (based on NLI):</strong> {{ confidence_score }}</p>
+            <p><strong>NLI Judgment:</strong> CONTRADICTION</p>
+            <p><strong>Confidence Score (based on NLI):</strong> 0.10</p>
             <p><small>(Score: 0.9=Entailment, 0.5=Neutral, 0.1=Contradiction, 0.0/N/A=Error/Not Run)</small></p>
         </div>
 
-        <div class="nli-results" style="background-color: #f5f5f5; border-left: 5px solid #bdbdbd; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
-            <h2>Verification Score</h2>
-            <p><strong>NLI Judgment:</strong> {{ nli_judgment }}</p>
-            <p><strong>Confidence Score (based on NLI):</strong> {{ confidence_score }}</p>
-            <p><small>(Score: 0.9=Entailment, 0.5=Neutral, 0.1=Contradiction, 0.0/N/A=Error/Not Run)</small></p>
-            <hr style="margin: 15px 0;">
-            <!-- Add Reasoning Section -->
-            <details>
-                <summary style="cursor: pointer; font-weight: bold;">Show NLI Reasoning</summary>
-                <pre style="white-space: pre-wrap; word-wrap: break-word; background-color: #eee; padding: 10px; margin-top: 10px; border-radius: 4px;">{{ nli_reasoning }}</pre>
-            </details>
-            <!-- End Reasoning Section -->
-        </div>
+        <h2>Document Context with Evidence Highlighted</h2>
 
           <h2>Document Context with Evidence Highlighted</h2>
           <p><small>Sentences highlighted based on attention score (brighter = higher score). Up to 5 levels shown.</small></p>
-          <div id="document-content" class="document">{{ full_doc_text }}</div>
+          <div id="document-content" class="document">Leo was a boy who liked looking closely at things. One sunny afternoon, the birds were singing, and a gentle breeze stirred the leaves. &#34;It&#39;s a good day for a walk,&#34; Leo thought. He went out the back door and started down the dusty path that led into the small woods behind his house.
+
+The sunlight made patterns on the ground. Leo kicked a small pebble and watched it skitter away. He looked at the tall trees and the moss growing on an old log. As he walked, his eyes caught a little sparkle near the edge of the path.
+
+He bent down. Partially hidden under a leaf was a stone. It wasn&#39;t like the other rough pebbles. This one was smooth and grey, with tiny flecks that glittered when the light hit them just right. It felt cool and solid in his hand. Leo smiled. He put the special stone carefully into his pocket and continued his walk, happy with his small discovery.</div>
 
           <h2>Top Evidence Sentences (Ranked by Attention)</h2>
           <ol class="evidence-list">
-              {% if evidence_spans_with_scores and not is_placeholder %}
-                  {% for score, sentence in evidence_spans_with_scores %}
-                      <li>[Score: {{ "%.4f"|format(score) }}] {{ sentence }}</li>
-                  {% endfor %}
-              {% elif is_placeholder %}
-                  <li class="placeholder">{{ evidence_spans_with_scores[0][1] }}</li> {# Display placeholder/error message #}
-              {% else %}
-                  <li class="placeholder">No evidence spans identified.</li>
-              {% endif %}
+              
+                  
+                      <li>[Score: 0.0296] This one was smooth and grey, with tiny flecks that glittered when the light hit them just right.</li>
+                  
+                      <li>[Score: 0.0288] He put the special stone carefully into his pocket and continued his walk, happy with his small discovery.</li>
+                  
+                      <li>[Score: 0.0278] He went out the back door and started down the dusty path that led into the small woods behind his house.</li>
+                  
+                      <li>[Score: 0.0244] One sunny afternoon, the birds were singing, and a gentle breeze stirred the leaves.</li>
+                  
+                      <li>[Score: 0.0242] As he walked, his eyes caught a little sparkle near the edge of the path.</li>
+                  
+              
           </ol>
       </div>
 
       <script>
           // Use Jinja2's |tojson filter to safely embed data
-          const evidenceData = {{ evidence_spans_with_scores | tojson }};
-          const isPlaceholder = {{ is_placeholder | tojson }};
+          const evidenceData = [[0.029619693756103516, "This one was smooth and grey, with tiny flecks that glittered when the light hit them just right."], [0.02884817123413086, "He put the special stone carefully into his pocket and continued his walk, happy with his small discovery."], [0.02778148651123047, "He went out the back door and started down the dusty path that led into the small woods behind his house."], [0.02442312240600586, "One sunny afternoon, the birds were singing, and a gentle breeze stirred the leaves."], [0.024152755737304688, "As he walked, his eyes caught a little sparkle near the edge of the path."]];
+          const isPlaceholder = false;
           const MAX_HIGHLIGHT_LEVELS = 5; // Max number of distinct highlight colors
 
           function escapeRegex(string) {

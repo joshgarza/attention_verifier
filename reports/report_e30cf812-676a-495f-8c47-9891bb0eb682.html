@@ -30,57 +30,57 @@
 
         <div class="question">
             <h2>Question</h2>
-            <p>{{ question }}</p>
+            <p>&#34;Based on the Project Chimera Q3 update memo, what was the root cause identified for the temporal misalignment events involving the XR-7b sensor package?&#34;</p>
         </div>
 
         <div class="answer">
             <h2>Model Answer</h2>
-            <p>{{ answer_text }}</p>
+            <p> &#34;The root cause identified for the temporal misalignment events was high atmospheric interference, particularly correlated with local weather patterns.&#34;
+
+Note: The response is to be given in the specified format, with the question and answer provided as instructed. The analysis of the memo content is crucial for identifying the correct root cause mentioned within the document. The correct answer reflects the information provided in the memo about the cause of the temporal misalignment events.</p>
         </div>
 
         <div class="nli-results">
             <h2>Verification Score</h2>
-            <p><strong>NLI Judgment:</strong> {{ nli_judgment }}</p>
-            <p><strong>Confidence Score (based on NLI):</strong> {{ confidence_score }}</p>
+            <p><strong>NLI Judgment:</strong> CONTRADICTION</p>
+            <p><strong>Confidence Score (based on NLI):</strong> 0.10</p>
             <p><small>(Score: 0.9=Entailment, 0.5=Neutral, 0.1=Contradiction, 0.0/N/A=Error/Not Run)</small></p>
         </div>
 
-        <div class="nli-results" style="background-color: #f5f5f5; border-left: 5px solid #bdbdbd; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
-            <h2>Verification Score</h2>
-            <p><strong>NLI Judgment:</strong> {{ nli_judgment }}</p>
-            <p><strong>Confidence Score (based on NLI):</strong> {{ confidence_score }}</p>
-            <p><small>(Score: 0.9=Entailment, 0.5=Neutral, 0.1=Contradiction, 0.0/N/A=Error/Not Run)</small></p>
-            <hr style="margin: 15px 0;">
-            <!-- Add Reasoning Section -->
-            <details>
-                <summary style="cursor: pointer; font-weight: bold;">Show NLI Reasoning</summary>
-                <pre style="white-space: pre-wrap; word-wrap: break-word; background-color: #eee; padding: 10px; margin-top: 10px; border-radius: 4px;">{{ nli_reasoning }}</pre>
-            </details>
-            <!-- End Reasoning Section -->
-        </div>
+        <h2>Document Context with Evidence Highlighted</h2>
 
           <h2>Document Context with Evidence Highlighted</h2>
           <p><small>Sentences highlighted based on attention score (brighter = higher score). Up to 5 levels shown.</small></p>
-          <div id="document-content" class="document">{{ full_doc_text }}</div>
+          <div id="document-content" class="document">Internal Memo: Project Chimera Update - Q3
+
+Project Chimera continues its analysis of cross-modal data stream integration. This quarter focused on Phase 2: Sensor Fusion Calibration. We deployed the updated sensor package (Model XR-7b) across nodes 1 through 12 in the test environment. Initial telemetry indicates successful data acquisition from 98% of nodes, exceeding the 95% target benchmark.
+
+Data throughput analysis shows consistent performance, averaging 4.5 TiB/day. However, analysis of the fused data logs from nodes 7, 9, and 11 revealed intermittent temporal misalignment events, particularly during periods of high atmospheric interference (correlated with local weather patterns). These events manifest as sub-second timestamp discrepancies between the optical and thermal sensor feeds.
+
+While the overall data integrity remains high, these misalignments could potentially impact downstream real-time decision algorithms. The engineering team&#39;s preliminary assessment suggests exploring adjustments to the central clock synchronization protocol or potentially revising the data interpolation algorithm used during fusion. A detailed report outlining specific mitigation strategies is scheduled for Q4 review. No hardware failures were logged during this period.</div>
 
           <h2>Top Evidence Sentences (Ranked by Attention)</h2>
           <ol class="evidence-list">
-              {% if evidence_spans_with_scores and not is_placeholder %}
-                  {% for score, sentence in evidence_spans_with_scores %}
-                      <li>[Score: {{ "%.4f"|format(score) }}] {{ sentence }}</li>
-                  {% endfor %}
-              {% elif is_placeholder %}
-                  <li class="placeholder">{{ evidence_spans_with_scores[0][1] }}</li> {# Display placeholder/error message #}
-              {% else %}
-                  <li class="placeholder">No evidence spans identified.</li>
-              {% endif %}
+              
+                  
+                      <li>[Score: 0.0616] However, analysis of the fused data logs from nodes 7, 9, and 11 revealed intermittent temporal misalignment events, particularly during periods of high atmospheric interference (correlated with local weather patterns).</li>
+                  
+                      <li>[Score: 0.0541] Question: &#34;Based on the Project Chimera Q3 update memo, what was the root cause identified for the temporal misalignment events involving the XR-7b sensor package?&#34;</li>
+                  
+                      <li>[Score: 0.0331] The engineering team&#39;s preliminary assessment suggests exploring adjustments to the central clock synchronization protocol or potentially revising the data interpolation algorithm used during fusion.</li>
+                  
+                      <li>[Score: 0.0311] We deployed the updated sensor package (Model XR-7b) across nodes 1 through 12 in the test environment.</li>
+                  
+                      <li>[Score: 0.0280] Initial telemetry indicates successful data acquisition from 98% of nodes, exceeding the 95% target benchmark.</li>
+                  
+              
           </ol>
       </div>
 
       <script>
           // Use Jinja2's |tojson filter to safely embed data
-          const evidenceData = {{ evidence_spans_with_scores | tojson }};
-          const isPlaceholder = {{ is_placeholder | tojson }};
+          const evidenceData = [[0.06160116195678711, "However, analysis of the fused data logs from nodes 7, 9, and 11 revealed intermittent temporal misalignment events, particularly during periods of high atmospheric interference (correlated with local weather patterns)."], [0.05406999588012695, "Question: \"Based on the Project Chimera Q3 update memo, what was the root cause identified for the temporal misalignment events involving the XR-7b sensor package?\""], [0.033078670501708984, "The engineering team\u0027s preliminary assessment suggests exploring adjustments to the central clock synchronization protocol or potentially revising the data interpolation algorithm used during fusion."], [0.03113842010498047, "We deployed the updated sensor package (Model XR-7b) across nodes 1 through 12 in the test environment."], [0.028015613555908203, "Initial telemetry indicates successful data acquisition from 98% of nodes, exceeding the 95% target benchmark."]];
+          const isPlaceholder = false;
           const MAX_HIGHLIGHT_LEVELS = 5; // Max number of distinct highlight colors
 
           function escapeRegex(string) {

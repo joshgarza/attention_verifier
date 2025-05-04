@@ -21,14 +21,16 @@ NLI_MODEL_ID = "Llama-4-Maverick-17B-128E-Instruct-FP8" # Fallback if Scout not 
 def get_nli_judgment_via_api(premise: str, hypothesis: str) -> str:
     """
     Uses the Llama 4 API to perform an NLI check.
-    Improved parsing to handle chatty output.
+    Returns both the parsed judgment and the full reasoning text.
 
     Args:
         premise (str): The combined evidence sentences.
         hypothesis (str): The model's answer to evaluate.
 
     Returns:
-        str: The judgment ("ENTAILMENT", "CONTRADICTION", "NEUTRAL", or "API_ERROR")
+        tuple[str, str]: (judgment, reasoning_text)
+                       judgment is "ENTAILMENT", "CONTRADICTION", "NEUTRAL", or "API_ERROR"
+                       reasoning_text is the full text output from the API or an error message.
     """
     print("[NLI Check API] Performing NLI check using Llama 4 API...")
     # ... (API Key check, premise check remain the same) ...
@@ -115,4 +117,5 @@ def get_nli_judgment_via_api(premise: str, hypothesis: str) -> str:
 
 
     print(f"[NLI Check API] Final Judgment: {nli_parsed_judgment}")
-    return nli_parsed_judgment # Return the parsed judgment
+    # --- Return judgment AND the full raw text as reasoning ---
+    return nli_parsed_judgment, nli_output_text_raw

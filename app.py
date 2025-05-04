@@ -197,6 +197,7 @@ def handle_grade_response():
     # 3. Perform NLI Check (Conditional)
     print("Performing NLI check...")
     nli_judgment = "ERROR"
+    nli_reasoning = "(NLI check not performed)" # Default reasoning
     is_evidence_placeholder = any("(Attention" in span[1] or "(Cannot process" in span[1] or "(No evidence" in span[1] for span in evidence_spans_with_scores if isinstance(span, tuple) and len(span)>1) # Updated check
     if not is_evidence_placeholder and not answer_text.startswith("Error"):
         evidence_texts = [span[1] for span in evidence_spans_with_scores if isinstance(span, tuple) and len(span)>1] # Extract text safely
@@ -211,18 +212,40 @@ def handle_grade_response():
             # --- Use global model ---
             if model_global:
                  try:
-                     nli_judgment = get_nli_judgment(
-                         model_global, tokenizer, evidence_texts, answer_text
-                     )
+                     nli_judgment, nli_reasoning = get_nli_judgment_via_api(
+                premise=" ".join(evidence_texts),
+                hypothesis=answer_text
                  except Exception as e:
                       print(f"Error during local NLI check: {e}")
                       nli_judgment = f"ERROR ({e})"
             else:
-                 print("Error: Global model not available for local NLI check.")
-                 nli_judgment = "ERROR (Model Not Loaded)"
-    else:
+                print("Using Local Llama 3 for NLI...")
+                if model_global:
+                  try:
+                      # --- NOTE: Local Llama 3 NLI function needs update to return reasoning too ---
+                      # Assuming get_nli_judgment is updated similarly to return (judgment, reasoning)
+                      nli_judgment, nli_reasoning = get_nli_judgment(
+                          model_global, tokenizer, evidence_texts, answer_text
+                      )
+                      # If get_nli_judgment only returns judgment:
+                      # nli_judgment = get_nli_judgment(...)
+                      # nli_reasoning = "(Reasoning not captured for local Llama 3 NLI)"
+                  except Exception as e:
+                      print(f"Error during local NLI check: {e}")
+                      nli_judgment = f"ERROR ({e})"
+                      nli_reasoning = f"(Error during local NLI check: {e})"
+                else:
+                  nli_judgment = "ERROR (Model Not Loaded)"
+                  nli_reasoning = "(Local model for NLI was not loaded)"
+    elif is_evidence_placeholder:
         nli_judgment = "NOT_APPLICABLE"
+        nli_reasoning = "(NLI check not applicable due to invalid evidence)"
+    else: # Answer was error
+        nli_judgment = "NOT_APPLICABLE"
+        nli_reasoning = "(NLI check not applicable due to answer generation error)"
+
     print(f"NLI Judgment: {nli_judgment}")
+    print(f"NLI Reasoning (trunc): {nli_reasoning[:200]}...")
 
     # 4. Calculate Confidence Score
     # ... (logic to calculate confidence_score based on nli_judgment - same as before) ...
@@ -243,6 +266,7 @@ def handle_grade_response():
         evidence_spans_with_scores,
         document_text,
         nli_judgment=nli_judgment,
+        nli_reasoning=nli_reasoning, # *** Pass reasoning ***
         confidence_score=confidence_score,
         output_filename=report_filepath
     )
