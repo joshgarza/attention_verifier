@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Attention Verification Report</title>
+      <style>
+          body { font-family: sans-serif; line-height: 1.6; padding: 20px; }
+          .container { max-width: 900px; margin: auto; background: #f9f9f9; padding: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+          h1, h2 { color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px;}
+          .question, .answer { padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+          .question { background-color: #e7f3fe; border-left: 5px solid #2196F3; }
+          .answer { background-color: #e8f5e9; border-left: 5px solid #4CAF50; }
+          .document { background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; white-space: pre-wrap; /* Preserve whitespace */ word-wrap: break-word; margin-top: 20px; font-family: monospace; }
+          .evidence-list { margin-top: 20px; padding-left: 20px; }
+          .evidence-list li { margin-bottom: 5px; }
+          .highlight { padding: 0.1em 0; margin: -0.1em 0; line-height: 1.6; border-radius: 3px; }
+          /* Define highlight colors - add more if needed */
+          .highlight-0 { background-color: #fff176; } /* Bright Yellow */
+          .highlight-1 { background-color: #ffee58; }
+          .highlight-2 { background-color: #ffeb3b; }
+          .highlight-3 { background-color: #fff59d; }
+          .highlight-4 { background-color: #fff9c4; } /* Faintest Yellow */
+          .placeholder { color: #888; font-style: italic; }
+      </style>
+  </head>
+  <body>
+      <div class="container">
+          <h1>Attention Verification Report</h1>
+
+          <div class="question">
+              <h2>Question</h2>
+              <p>{{ question }}</p>
+          </div>
+
+          <div class="answer">
+              <h2>Model Answer</h2>
+              <p>{{ answer_text }}</p>
+          </div>
+
+          <h2>Document Context with Evidence Highlighted</h2>
+          <p><small>Sentences highlighted based on attention score (brighter = higher score). Up to 5 levels shown.</small></p>
+          <div id="document-content" class="document">{{ full_doc_text }}</div>
+
+          <h2>Top Evidence Sentences (Ranked by Attention)</h2>
+          <ol class="evidence-list">
+              {% if evidence_spans_with_scores and not is_placeholder %}
+                  {% for score, sentence in evidence_spans_with_scores %}
+                      <li>[Score: {{ "%.4f"|format(score) }}] {{ sentence }}</li>
+                  {% endfor %}
+              {% elif is_placeholder %}
+                  <li class="placeholder">{{ evidence_spans_with_scores[0][1] }}</li> {# Display placeholder/error message #}
+              {% else %}
+                  <li class="placeholder">No evidence spans identified.</li>
+              {% endif %}
+          </ol>
+      </div>
+
+      <script>
+          // Use Jinja2's |tojson filter to safely embed data
+          const evidenceData = {{ evidence_spans_with_scores | tojson }};
+          const isPlaceholder = {{ is_placeholder | tojson }};
+          const MAX_HIGHLIGHT_LEVELS = 5; // Max number of distinct highlight colors
+
+          function escapeRegex(string) {
+              // Escape characters that have special meaning in regex
+              return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          }
+
+          function highlightSentences() {
+              const docElement = document.getElementById('document-content');
+              if (!docElement || !evidenceData || isPlaceholder) {
+                  console.log("Highlighting skipped: No element, data, or placeholder found.");
+                  return;
+              }
+
+              let docHTML = docElement.innerHTML;
+
+              // Sort by score descending to apply highlights in order
+              evidenceData.sort((a, b) => b[0] - a[0]);
+
+              const appliedHighlights = []; // Keep track of highlighted ranges [start, end]
+
+              evidenceData.forEach((item, index) => {
+                  const score = item[0];
+                  const sentence = item[1]?.trim(); // Trim whitespace for better matching
+                  const highlightLevel = Math.min(index, MAX_HIGHLIGHT_LEVELS - 1);
+
+                  if (!sentence) return; // Skip if sentence is empty
+
+                  try {
+                      // Create a regex to find the sentence, ensuring it's not already inside a span
+                      // This is tricky. A simpler approach for hackathon: find all, then filter overlaps.
+                      const escapedSentence = escapeRegex(sentence);
+                      const regex = new RegExp(escapedSentence, 'g'); // Global search
+                      let match;
+                      let currentDocHTML = docHTML; // Work on a temporary string for replacements
+                      let newDocHTML = "";
+                      let lastIndex = 0;
+
+                      // Find all potential matches
+                      const potentialMatches = [];
+                      while ((match = regex.exec(docElement.textContent)) !== null) {
+                          // Store start/end based on textContent indices - careful, this might not map perfectly to HTML indices!
+                          // A better way would be to search the HTML string itself, but that's complex with existing tags.
+                          // For simplicity, let's try replacing in the HTML string cautiously.
+                          potentialMatches.push({ index: match.index, length: match[0].length });
+                      }
+
+
+                      // Attempt replacement in HTML string (less robust, might break tags)
+                      // It's generally safer to manipulate the DOM directly, but harder.
+                      // Let's try a simpler approach: replace first available match.
+                      let replaced = false;
+                      let searchStartIndex = 0;
+                      while(!replaced){
+                          const matchIndex = docHTML.indexOf(sentence, searchStartIndex);
+                          if (matchIndex === -1) break; // Not found anymore
+
+                          const matchEnd = matchIndex + sentence.length;
+
+                          // Check for overlap with existing highlights
+                          let overlaps = false;
+                          for(const [start, end] of appliedHighlights){
+                              if (matchIndex < end && matchEnd > start) {
+                                  overlaps = true;
+                                  break;
+                              }
+                          }
+
+                          if (!overlaps) {
+                              const spanStart = `<span class="highlight highlight-${highlightLevel}">`;
+                              const spanEnd = `</span>`;
+                              docHTML = docHTML.substring(0, matchIndex) +
+                                          spanStart +
+                                          docHTML.substring(matchIndex, matchEnd) +
+                                          spanEnd +
+                                          docHTML.substring(matchEnd);
+
+                              // Record the *new* boundaries considering the added span tags
+                              // Adjust indices for subsequent searches/checks
+                              const addedLength = spanStart.length + spanEnd.length;
+                              appliedHighlights.push([matchIndex, matchEnd + addedLength]);
+                              // Adjust other highlight boundaries if needed
+                              for(let j=0; j < appliedHighlights.length -1; j++){
+                                  if(appliedHighlights[j][0] >= matchIndex) appliedHighlights[j][0] += addedLength;
+                                  if(appliedHighlights[j][1] > matchIndex) appliedHighlights[j][1] += addedLength;
+                              }
+                              // Sort appliedHighlights by start index for overlap check
+                              appliedHighlights.sort((a,b) => a[0] - b[0]);
+
+                              replaced = true; // Only highlight first non-overlapping occurrence for simplicity
+                              break; // Exit inner loop once replaced for this sentence
+                          } else {
+                              // Found an overlap, search for next occurrence
+                              searchStartIndex = matchIndex + 1;
+                          }
+                      }
+
+
+                  } catch (e) {
+                      console.error("Error applying highlight for sentence:", sentence, e);
+                  }
+              });
+
+              // Update the document content with highlights
+              docElement.innerHTML = docHTML;
+          }
+
+          // Run highlighting when the page content is loaded
+          document.addEventListener('DOMContentLoaded', highlightSentences);
+      </script>
+  </body>
+</html>

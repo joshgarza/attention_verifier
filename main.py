@@ -10,7 +10,7 @@ from src.data_loader import load_document
 from src.model_handler import load_model_and_tokenizer, get_answer_and_attention
 from src.tokenizer_utils import prepare_tokenizer_info_for_attention
 from src.attention_processor import find_evidence_spans
-from src.output_formatter import display_results
+from src.output_formatter import display_results, generate_html_report
 # Import dummy data functions only if needed for testing/dummy run
 from src.utils import create_dummy_attention, create_dummy_tokenizer_output
 
@@ -144,6 +144,7 @@ if __name__ == "__main__":
         else:
             # Use specific function for real pipeline
             q_final, answer_final, evidence_final = run_real_pipeline(args.doc_path, args.question)
+            doc_text_for_report = load_document(args.doc_path) or "(Could not reload document for report)"
 
     except Exception as e:
         # Catch unexpected errors during pipeline execution
@@ -163,6 +164,13 @@ if __name__ == "__main__":
 
     # Display results using the formatter
     display_results(q_final, answer_final, evidence_final)
+    generate_html_report(
+        q_final,
+        answer_final,
+        evidence_final, # Pass the list of (score, sentence) tuples
+        doc_text_for_report,
+        output_filename="verification_report.html" # Output filename
+    )
 
     overall_end_time = time.time()
     print(f"\n--- Total script execution time: {overall_end_time - overall_start_time:.2f} seconds ---")
