@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attention Verification</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+        textarea { width: 98%; min-height: 200px; margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        input[type="text"] { width: 98%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 15px; margin-right: 10px; cursor: pointer; border: none; border-radius: 4px; background-color: #007bff; color: white; font-size: 1em; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        #outputArea, #reportArea { margin-top: 20px; padding: 15px; border-radius: 5px; }
+        #outputArea { background-color: #f0f0f0; border: 1px solid #ddd; }
+        #reportArea { background-color: #e8f5e9; border: 1px solid #c8e6c9; }
+        #reportLink { color: #1a0dab; text-decoration: none; font-weight: bold; }
+        #reportLink:hover { text-decoration: underline; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; /* Hidden by default */ margin-left: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>Attention-Guided Verification</h1>
+
+    <form id="main-form">
+        <label for="document">Document Text:</label><br>
+        <textarea id="document" name="document" required>Leo was a boy who liked looking closely at things. One sunny afternoon, the birds were singing, and a gentle breeze stirred the leaves. "It's a good day for a walk," Leo thought. He went out the back door and started down the dusty path that led into the small woods behind his house.
+
+The sunlight made patterns on the ground. Leo kicked a small pebble and watched it skitter away. He looked at the tall trees and the moss growing on an old log. As he walked, his eyes caught a little sparkle near the edge of the path.
+
+He bent down. Partially hidden under a leaf was a stone. It wasn't like the other rough pebbles. This one was smooth and grey, with tiny flecks that glittered when the light hit them just right. It felt cool and solid in his hand. Leo smiled. He put the special stone carefully into his pocket and continued his walk, happy with his small discovery.</textarea><br>
+
+        <label for="question">Question:</label><br>
+        <input type="text" id="question" name="question" required value="What did Leo put in his pocket?"><br>
+
+        <button type="button" id="run-button">1. Run Inference (Get Answer)</button>
+        <div id="loader-inference" class="loader"></div>
+
+        <button type="button" id="grade-button" disabled>2. Grade Response (Process Attention & NLI)</button>
+        <div id="loader-grading" class="loader"></div>
+    </form>
+
+    <div id="outputArea" class="hidden">
+        <h2>Model Answer:</h2>
+        <pre id="answer-output"></pre>
+    </div>
+
+    <div id="reportArea" class="hidden">
+        <h2>Verification Report:</h2>
+        <p><a id="reportLink" href="#" target="_blank">View Full Report (Opens in new tab)</a></p>
+    </div>
+
+    <div id="errorArea" class="hidden" style="color: red; margin-top: 20px; border: 1px solid red; padding: 10px; background-color: #ffeeee;">
+        <h2>Error:</h2>
+        <p id="error-message"></p>
+    </div>
+
+    <script>
+        const form = document.getElementById('main-form');
+        const runButton = document.getElementById('run-button');
+        const gradeButton = document.getElementById('grade-button');
+        const answerOutput = document.getElementById('answer-output');
+        const outputArea = document.getElementById('outputArea');
+        const reportLink = document.getElementById('reportLink');
+        const reportArea = document.getElementById('reportArea');
+        const errorArea = document.getElementById('errorArea');
+        const errorMessage = document.getElementById('error-message');
+        const loaderInference = document.getElementById('loader-inference');
+        const loaderGrading = document.getElementById('loader-grading');
+
+        let currentJobId = null;
+
+        function setLoading(isLoading, type) {
+            const loader = (type === 'inference') ? loaderInference : loaderGrading;
+            const button = (type === 'inference') ? runButton : gradeButton;
+            if (isLoading) {
+                loader.style.display = 'inline-block';
+                button.disabled = true;
+                if (type === 'inference') gradeButton.disabled = true; // Disable grading while inference runs
+            } else {
+                loader.style.display = 'none';
+                // Re-enable logic is handled specifically in response handlers
+            }
+             errorArea.classList.add('hidden'); // Hide errors on new action start
+        }
+
+        runButton.addEventListener('click', async () => {
+            setLoading(true, 'inference');
+            outputArea.classList.add('hidden');
+            reportArea.classList.add('hidden');
+            currentJobId = null; // Reset job ID
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/run_inference', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 'inference_complete') {
+                    answerOutput.textContent = result.answer;
+                    outputArea.classList.remove('hidden');
+                    currentJobId = result.job_id;
+                    gradeButton.disabled = false; // Enable grading
+                    runButton.disabled = false; // Re-enable run button
+                } else {
+                    errorMessage.textContent = result.message || 'Unknown error during inference.';
+                    errorArea.classList.remove('hidden');
+                    runButton.disabled = false; // Re-enable on error
+                }
+            } catch (error) {
+                console.error("Fetch error:", error);
+                errorMessage.textContent = 'Network error or server unavailable during inference: ' + error;
+                errorArea.classList.remove('hidden');
+                runButton.disabled = false; // Re-enable on error
+            } finally {
+                setLoading(false, 'inference');
+            }
+        });
+
+        gradeButton.addEventListener('click', async () => {
+            if (!currentJobId) {
+                alert('Please run inference first.');
+                return;
+            }
+            setLoading(true, 'grading');
+            reportArea.classList.add('hidden');
+            runButton.disabled = true; // Disable run while grading
+
+            const formData = new FormData();
+            formData.append('job_id', currentJobId);
+
+            try {
+                const response = await fetch('/grade_response', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 'grading_complete') {
+                    reportLink.href = result.report_path;
+                    reportArea.classList.remove('hidden');
+                    gradeButton.disabled = true; // Disable after successful grading
+                } else {
+                    errorMessage.textContent = result.message || 'Unknown error during grading.';
+                    errorArea.classList.remove('hidden');
+                    // Keep grade button enabled to allow retry? Or disable? Let's keep enabled.
+                }
+            } catch (error) {
+                console.error("Fetch error:", error);
+                errorMessage.textContent = 'Network error or server unavailable during grading: ' + error;
+                errorArea.classList.remove('hidden');
+            } finally {
+                setLoading(false, 'grading');
+                 runButton.disabled = false; // Re-enable run button after grading attempt
+            }
+        });
+
+    </script>
+
+</body>
+</html>

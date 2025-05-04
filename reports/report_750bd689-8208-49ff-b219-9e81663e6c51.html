@@ -30,18 +30,20 @@
 
         <div class="question">
             <h2>Question</h2>
-            <p>Based on the Project Chimera Q3 update memo, what was the root cause identified for the temporal misalignment events involving the XR-7b sensor package?</p>
+            <p>What did Leo put in his pocket?</p>
         </div>
 
         <div class="answer">
             <h2>Model Answer</h2>
-            <p> The root cause identified for the temporal misalignment events involving the XR-7b sensor package was correlated with local weather patterns, indicating that atmospheric interference was likely the primary cause.</p>
+            <p> A smooth grey stone with tiny flecks that glittered when the light hit them just right.
+
+The best answer is A smooth grey stone with tiny flecks that glittered when the light hit them just right.</p>
         </div>
 
         <div class="nli-results">
             <h2>Verification Score</h2>
-            <p><strong>NLI Judgment:</strong> ENTAILMENT</p>
-            <p><strong>Confidence Score (based on NLI):</strong> 0.90</p>
+            <p><strong>NLI Judgment:</strong> API_ERROR</p>
+            <p><strong>Confidence Score (based on NLI):</strong> 0.00</p>
             <p><small>(Score: 0.9=Entailment, 0.5=Neutral, 0.1=Contradiction, 0.0/N/A=Error/Not Run)</small></p>
         </div>
 
@@ -49,27 +51,25 @@
 
           <h2>Document Context with Evidence Highlighted</h2>
           <p><small>Sentences highlighted based on attention score (brighter = higher score). Up to 5 levels shown.</small></p>
-          <div id="document-content" class="document">Internal Memo: Project Chimera Update - Q3
+          <div id="document-content" class="document">Leo was a boy who liked looking closely at things. One sunny afternoon, the birds were singing, and a gentle breeze stirred the leaves. &#34;It&#39;s a good day for a walk,&#34; Leo thought. He went out the back door and started down the dusty path that led into the small woods behind his house.
 
-Project Chimera continues its analysis of cross-modal data stream integration. This quarter focused on Phase 2: Sensor Fusion Calibration. We deployed the updated sensor package (Model XR-7b) across nodes 1 through 12 in the test environment. Initial telemetry indicates successful data acquisition from 98% of nodes, exceeding the 95% target benchmark.
+The sunlight made patterns on the ground. Leo kicked a small pebble and watched it skitter away. He looked at the tall trees and the moss growing on an old log. As he walked, his eyes caught a little sparkle near the edge of the path.
 
-Data throughput analysis shows consistent performance, averaging 4.5 TiB/day. However, analysis of the fused data logs from nodes 7, 9, and 11 revealed intermittent temporal misalignment events, particularly during periods of high atmospheric interference (correlated with local weather patterns). These events manifest as sub-second timestamp discrepancies between the optical and thermal sensor feeds.
-
-While the overall data integrity remains high, these misalignments could potentially impact downstream real-time decision algorithms. The engineering team&#39;s preliminary assessment suggests exploring adjustments to the central clock synchronization protocol or potentially revising the data interpolation algorithm used during fusion. A detailed report outlining specific mitigation strategies is scheduled for Q4 review. No hardware failures were logged during this period.</div>
+He bent down. Partially hidden under a leaf was a stone. It wasn&#39;t like the other rough pebbles. This one was smooth and grey, with tiny flecks that glittered when the light hit them just right. It felt cool and solid in his hand. Leo smiled. He put the special stone carefully into his pocket and continued his walk, happy with his small discovery.</div>
 
           <h2>Top Evidence Sentences (Ranked by Attention)</h2>
           <ol class="evidence-list">
               
                   
-                      <li>[Score: 0.0697] Question: Based on the Project Chimera Q3 update memo, what was the root cause identified for the temporal misalignment events involving the XR-7b sensor package?</li>
+                      <li>[Score: 0.0399] This one was smooth and grey, with tiny flecks that glittered when the light hit them just right.</li>
                   
-                      <li>[Score: 0.0688] However, analysis of the fused data logs from nodes 7, 9, and 11 revealed intermittent temporal misalignment events, particularly during periods of high atmospheric interference (correlated with local weather patterns).</li>
+                      <li>[Score: 0.0391] He put the special stone carefully into his pocket and continued his walk, happy with his small discovery.</li>
                   
-                      <li>[Score: 0.0396] The engineering team&#39;s preliminary assessment suggests exploring adjustments to the central clock synchronization protocol or potentially revising the data interpolation algorithm used during fusion.</li>
+                      <li>[Score: 0.0321] He went out the back door and started down the dusty path that led into the small woods behind his house.</li>
                   
-                      <li>[Score: 0.0348] We deployed the updated sensor package (Model XR-7b) across nodes 1 through 12 in the test environment.</li>
+                      <li>[Score: 0.0314] One sunny afternoon, the birds were singing, and a gentle breeze stirred the leaves.</li>
                   
-                      <li>[Score: 0.0327] While the overall data integrity remains high, these misalignments could potentially impact downstream real-time decision algorithms.</li>
+                      <li>[Score: 0.0276] As he walked, his eyes caught a little sparkle near the edge of the path.</li>
                   
               
           </ol>
@@ -77,7 +77,7 @@ While the overall data integrity remains high, these misalignments could potenti
 
       <script>
           // Use Jinja2's |tojson filter to safely embed data
-          const evidenceData = [[0.06973648071289062, "Question: Based on the Project Chimera Q3 update memo, what was the root cause identified for the temporal misalignment events involving the XR-7b sensor package?"], [0.06880664825439453, "However, analysis of the fused data logs from nodes 7, 9, and 11 revealed intermittent temporal misalignment events, particularly during periods of high atmospheric interference (correlated with local weather patterns)."], [0.03956890106201172, "The engineering team\u0027s preliminary assessment suggests exploring adjustments to the central clock synchronization protocol or potentially revising the data interpolation algorithm used during fusion."], [0.03475379943847656, "We deployed the updated sensor package (Model XR-7b) across nodes 1 through 12 in the test environment."], [0.03269481658935547, "While the overall data integrity remains high, these misalignments could potentially impact downstream real-time decision algorithms."]];
+          const evidenceData = [[0.03986930847167969, "This one was smooth and grey, with tiny flecks that glittered when the light hit them just right."], [0.03907489776611328, "He put the special stone carefully into his pocket and continued his walk, happy with his small discovery."], [0.03213024139404297, "He went out the back door and started down the dusty path that led into the small woods behind his house."], [0.031418800354003906, "One sunny afternoon, the birds were singing, and a gentle breeze stirred the leaves."], [0.027610301971435547, "As he walked, his eyes caught a little sparkle near the edge of the path."]];
           const isPlaceholder = false;
           const MAX_HIGHLIGHT_LEVELS = 5; // Max number of distinct highlight colors
 

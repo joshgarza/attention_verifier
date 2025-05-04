@@ -13,7 +13,7 @@ from src.attention_processor import find_evidence_spans
 from src.output_formatter import display_results, generate_html_report
 # Import dummy data functions only if needed for testing/dummy run
 from src.utils import create_dummy_attention, create_dummy_tokenizer_output
-from src.nli_checker import get_nli_judgment
+from src.llama4_api_client import get_nli_judgment_via_api
 
 def run_dummy_pipeline():
     """Runs the pipeline using dummy data."""
@@ -135,9 +135,7 @@ def run_real_pipeline(doc_path, question):
     if not is_evidence_placeholder and not answer_text.startswith("Error"):
         # Extract just the sentence text for the NLI premise
         evidence_texts = [span[1] for span in evidence_spans_with_scores]
-        nli_judgment = get_nli_judgment(
-            model, # Reuse the loaded model
-            tokenizer,
+        nli_judgment = get_nli_judgment_via_api(
             evidence_texts,
             answer_text
         )
@@ -148,19 +146,36 @@ def run_real_pipeline(doc_path, question):
     pipeline_results["nli_judgment"] = nli_judgment
     print(f"NLI Judgment: {nli_judgment}")
 
-    # Calculate Confidence Score based on NLI
+    # --- Calculate Confidence Score based on NLI ---
+    confidence_score = 0.0 # Default to lowest confidence
+
     if nli_judgment == "ENTAILMENT":
-        pipeline_results["confidence_score"] = 0.9 # High confidence
+        # High confidence: Evidence supports the answer.
+        confidence_score = 0.9
     elif nli_judgment == "NEUTRAL":
-        pipeline_results["confidence_score"] = 0.5 # Medium confidence
+        # Medium confidence: Evidence doesn't strongly support or contradict.
+        # Could be hallucination (lack of support) or unrelated evidence.
+        confidence_score = 0.5
     elif nli_judgment == "CONTRADICTION":
-        pipeline_results["confidence_score"] = 0.1 # Low confidence (high hallucination likelihood)
-    else: # ERROR or NOT_APPLICABLE
-        pipeline_results["confidence_score"] = 0.0 # Or None? 0.0 indicates low/failed confidence check
+        # Low confidence: Evidence contradicts the answer. High likelihood of hallucination.
+        confidence_score = 0.1
+    elif nli_judgment == "API_ERROR" or nli_judgment == "ERROR":
+        # Low confidence: The NLI check itself failed. Cannot trust the answer.
+        confidence_score = 0.0
+        print("Warning: NLI check resulted in an error.")
+    elif nli_judgment == "NOT_APPLICABLE":
+        # Low confidence: NLI check couldn't run due to prior failure (e.g., no evidence).
+        confidence_score = 0.0
+        print("Info: NLI check was not applicable.")
+    else:
+        # Handle any unexpected judgment string
+        print(f"Warning: Unknown NLI judgment '{nli_judgment}'. Assigning low confidence.")
+        confidence_score = 0.0
 
+    pipeline_results["confidence_score"] = confidence_score
+    print(f"Calculated Confidence Score: {confidence_score}")
 
-    return pipeline_results
-
+    return pipeline_results # Return the full dictionary
 
 # --- Main Execution Logic ---
 if __name__ == "__main__":
