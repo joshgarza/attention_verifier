@@ -2,8 +2,7 @@ import torch
 
 # --- Model Configuration ---
 # The exact model ID you downloaded
-MODEL_ID = "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8"
-
+MODEL_ID = "meta-llama/Llama-3.3-70B-Instruct"
 # --- Hardware Configuration ---
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 # You might need specific GPU ID if multiple are present: "cuda:0"

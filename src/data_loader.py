@@ -10,6 +10,7 @@ def load_document(file_path):
         if file_path.lower().endswith(".txt"):
             with open(file_path, 'r', encoding='utf-8') as f:
                 return f.read()
+            print("Data loaded...")
         # Add elif clauses for .pdf, .json etc. here
         else:
             print(f"Error: Unsupported file type: {file_path}")

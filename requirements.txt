@@ -3,6 +3,8 @@ torch>=2.1 # Check CUDA compatibility for your instance/driver
 accelerate # Often needed by transformers for device mapping
 llama-stack-client # Since you installed this
 python-dotenv # Good practice for config/secrets
+nltk
+compressed-tensors
 # Add other potential libraries:
 # numpy
 # tqdm # For progress bars
