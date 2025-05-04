@@ -10,7 +10,7 @@ import gc
 # Local project imports
 import config
 from src.data_loader import load_document # Keep this if loading from file path later
-from src.model_handler import load_model_and_tokenizer, get_answer_and_attention, get_nli_judgment # Llama 3 NLI
+from src.model_handler import load_model_and_tokenizer, get_answer_and_attention # Llama 3 NLI
 from src.llama4_api_client import get_nli_judgment_via_api # Llama 4 API NLI
 from src.tokenizer_utils import prepare_tokenizer_info_for_attention
 from src.attention_processor import find_evidence_spans
