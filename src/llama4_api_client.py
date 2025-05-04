@@ -1,7 +1,8 @@
-# src/llama4_api_client.py (or add to model_handler.py)
+# src/llama4_api_client.py
 import requests
 import os
 import json
+import re # Import regular expressions
 
 # --- Get API Key ---
 # It's better practice to load from env var than hardcode
@@ -20,6 +21,7 @@ NLI_MODEL_ID = "Llama-4-Maverick-17B-128E-Instruct-FP8" # Fallback if Scout not 
 def get_nli_judgment_via_api(premise: str, hypothesis: str) -> str:
     """
     Uses the Llama 4 API to perform an NLI check.
+    Improved parsing to handle chatty output.
 
     Args:
         premise (str): The combined evidence sentences.
@@ -29,102 +31,88 @@ def get_nli_judgment_via_api(premise: str, hypothesis: str) -> str:
         str: The judgment ("ENTAILMENT", "CONTRADICTION", "NEUTRAL", or "API_ERROR")
     """
     print("[NLI Check API] Performing NLI check using Llama 4 API...")
-
-    if not LLAMA_API_KEY:
-        print("[NLI Check API] Error: API Key not found.")
-        return "API_ERROR"
-
-    if not premise:
-        print("[NLI Check API] No premise (evidence) provided.")
-        return "NEUTRAL" # Treat no evidence as neutral
+    # ... (API Key check, premise check remain the same) ...
+    if not LLAMA_API_KEY: return "API_ERROR"
+    if not premise: return "NEUTRAL"
 
     # Construct the NLI Prompt (same careful structure as before)
     nli_prompt_content = f"""You are an expert linguistic analyst performing a Natural Language Inference task.
     Analyze the relationship between the following Premise and Hypothesis.
     Based ONLY on the information presented in the Premise, determine if the Hypothesis is entailed by the Premise, contradicts the Premise, or is neutral with respect to the Premise.
+
     <Premise>
     {premise}
     </Premise>
+
     <Hypothesis>
     {hypothesis}
     </Hypothesis>
+
     Classification (Choose ONE and output ONLY the single chosen word):
     ENTAILMENT
     CONTRADICTION
     NEUTRAL
+
     Your Answer:"""
 
-    # Format messages for the API
-    messages = [
-        # Optional: System prompt for the NLI task (might help constrain output)
-        # {"role": "system", "content": "You are an NLI classification assistant. Only output one word: ENTAILMENT, CONTRADICTION, or NEUTRAL."},
-        {"role": "user", "content": nli_prompt_content}
-    ]
+    messages = [{"role": "user", "content": nli_prompt_content}]
+    headers = {"Authorization": f"Bearer {LLAMA_API_KEY}", "Content-Type": "application/json"}
+    payload = {"model": NLI_MODEL_ID, "messages": messages, "max_tokens": 300, "temperature": 0.1} # Increased max_tokens slightly just in case
 
-    # Construct headers and payload
-    headers = {
-        "Authorization": f"Bearer {LLAMA_API_KEY}",
-        "Content-Type": "application/json",
-    }
-    payload = {
-        "model": NLI_MODEL_ID,
-        "messages": messages,
-        "max_tokens": 10, # Max tokens for the classification word + slight buffer
-        "temperature": 0.1, # Low temp for more deterministic classification
-    }
+    nli_output_text_raw = "" # Store the raw text for parsing
+    nli_parsed_judgment = "API_ERROR" # Default return
 
-    nli_output_text = "API_ERROR"
     try:
-        response = requests.post(
-            LLAMA_API_ENDPOINT,
-            headers=headers,
-            json=payload, # Use json= instead of data= with json.dumps
-            timeout=60 # Add a reasonable timeout (e.g., 60 seconds)
-        )
-        response.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
-
+        response = requests.post(LLAMA_API_ENDPOINT, headers=headers, json=payload, timeout=60)
+        response.raise_for_status()
         response_data = response.json()
-        print(f"[NLI Check API] Full API Response: {response_data}") # Log full response for debugging
+        print(f"[NLI Check API] Full API Response: {response_data}")
 
-        # Extract the text response - based on the example structure
+        # Extract the text response
+        generated_text = ""
         if "completion_message" in response_data and isinstance(response_data["completion_message"], dict):
             content = response_data["completion_message"].get("content")
-            if isinstance(content, dict):
-                 generated_text = content.get("text", "").strip()
-                 nli_output_text = generated_text.upper() # Uppercase for consistency
-                 print(f"[NLI Check API] Raw API output: '{generated_text}' -> Parsed: '{nli_output_text}'")
-            else:
-                 print(f"[NLI Check API] Warning: 'content' field has unexpected type or missing 'text': {content}")
-        elif "choices" in response_data and len(response_data["choices"]) > 0: # Check for OpenAI compatible format too
-             message = response_data["choices"][0].get("message", {})
-             generated_text = message.get("content", "").strip()
-             nli_output_text = generated_text.upper()
-             print(f"[NLI Check API] Raw API output (OpenAI format): '{generated_text}' -> Parsed: '{nli_output_text}'")
+            if isinstance(content, dict): generated_text = content.get("text", "").strip()
+        elif "choices" in response_data and len(response_data["choices"]) > 0:
+            message = response_data["choices"][0].get("message", {})
+            generated_text = message.get("content", "").strip()
         else:
-            print(f"[NLI Check API] Warning: Could not find expected text in response structure: {response_data}")
+            print(f"[NLI Check API] Warning: Could not find expected text in response structure.")
 
+        nli_output_text_raw = generated_text # Store raw output
+        print(f"[NLI Check API] Raw API output: '{nli_output_text_raw}'")
 
-    except requests.exceptions.Timeout:
-        print("[NLI Check API] Error: Request timed out.")
+        # --- *** NEW PARSING LOGIC *** ---
+        if nli_output_text_raw:
+            # Check for keywords in order of precedence (Contradiction > Entailment > Neutral)
+            # Use case-insensitive search within the raw text
+            raw_upper = nli_output_text_raw.upper() # Search in uppercase
+
+            # Look for definitive statements near the end if possible (like "The best answer is: **WORD**")
+            # More robust: search the whole text
+            if "CONTRADICTION" in raw_upper or "CONTRADICTS" in raw_upper :
+                 nli_parsed_judgment = "CONTRADICTION"
+            elif "ENTAILMENT" in raw_upper or "ENTAILED" in raw_upper or "SUPPORTED" in raw_upper : # Added SUPPORTED based on model output
+                 nli_parsed_judgment = "ENTAILMENT"
+            elif "NEUTRAL" in raw_upper:
+                 nli_parsed_judgment = "NEUTRAL"
+            else:
+                 print(f"[NLI Check API] Warning: Could not find valid judgment keyword in output.")
+                 nli_parsed_judgment = "API_ERROR" # Fallback if no keyword found
+        else:
+             print("[NLI Check API] Warning: API returned empty text.")
+             nli_parsed_judgment = "API_ERROR"
+        # --- *** END NEW PARSING LOGIC *** ---
+
+    # ... (keep error handling: Timeout, RequestException, etc.) ...
     except requests.exceptions.RequestException as e:
         print(f"[NLI Check API] Error: API request failed: {e}")
-        # Log response body if available on error
-        if hasattr(e, 'response') and e.response is not None:
-            print(f"Response status: {e.response.status_code}")
-            try:
-                print(f"Response body: {e.response.json()}")
-            except json.JSONDecodeError:
-                print(f"Response body (non-JSON): {e.response.text}")
+        if hasattr(e, 'response') and e.response is not None: print(f"Response status: {e.response.status_code}")
+        nli_parsed_judgment = "API_ERROR"
     except Exception as e:
          print(f"[NLI Check API] Error processing API response: {e}")
+         nli_parsed_judgment = "API_ERROR"
 
 
-    # Validate and return the judgment
-    valid_judgments = ["ENTAILMENT", "CONTRADICTION", "NEUTRAL"]
-    first_word = nli_output_text.split()[0] if nli_output_text else "API_ERROR"
-    if first_word in valid_judgments:
-        print(f"[NLI Check API] Final Judgment: {first_word}")
-        return first_word
-    else:
-        print(f"[NLI Check API] Warning: Model output '{nli_output_text}' is not a valid judgment.")
-        return "API_ERROR" # Return API_ERROR if output is unexpected or errors occurred
+    print(f"[NLI Check API] Final Judgment: {nli_parsed_judgment}")
+    return nli_parsed_judgment # Return the parsed judgment
