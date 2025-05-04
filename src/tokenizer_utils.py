@@ -133,14 +133,33 @@ def find_document_boundaries(prompt_text):
 def calculate_document_indices(prompt_offsets, doc_start_char, doc_end_char):
     """Helper to find token indices corresponding to the document span."""
     document_token_indices = []
-    if prompt_offsets is None: return document_token_indices
+    print(f"[Tokenizer Utils] Calculating doc indices with boundaries [{doc_start_char}, {doc_end_char})") # Added print
+    if prompt_offsets is None:
+        print("[Tokenizer Utils] No prompt offsets provided.")
+        return document_token_indices
 
     for i, offset in enumerate(prompt_offsets):
-        if isinstance(offset, tuple) and len(offset) == 2 and \
-           offset[0] is not None and offset[1] is not None and \
-           offset != (0, 0) and \
-           offset[0] >= doc_start_char and \
-           offset[1] <= doc_end_char and \
-           offset[0] < offset[1]:
-             document_token_indices.append(i)
+        # --- ADDED DEBUG PRINT ---
+        print(f"  - Checking token {i}: offset={offset}")
+        # --- END DEBUG PRINT ---
+        if isinstance(offset, (list, tuple)) and len(offset) == 2 and \
+            offset[0] is not None and offset[1] is not None and \
+            isinstance(offset[0], int) and isinstance(offset[1], int) and \
+            offset != (0, 0) and offset != [0, 0] and \
+            offset[0] < offset[1]: # Ensure start < end
+
+            is_within_boundaries = (offset[0] >= doc_start_char and offset[1] <= doc_end_char)
+            # --- ADDED DEBUG PRINT ---
+            # if is_within_boundaries:
+            print(f"      -> WITHIN BOUNDARIES! Appending index {i}")
+            # --- END DEBUG PRINT ---
+
+            if is_within_boundaries:
+                    document_token_indices.append(i)
+        else:
+             # --- ADDED DEBUG PRINT ---
+             print(f"      -> SKIPPING (Invalid offset format or value: {offset})")
+             # --- END DEBUG PRINT ---
+
+    print(f"[Tokenizer Utils] Found {len(document_token_indices)} document token indices.") # Added print
     return document_token_indices

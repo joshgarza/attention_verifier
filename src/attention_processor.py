@@ -46,38 +46,52 @@ def aggregate_attention_scores(attention_weights, prompt_len, answer_len, aggreg
         print(f"[AttnProc] Error: Aggregation layer index {aggregation_layer} out of bounds for {len(attention_weights)} layers.")
         return torch.zeros(prompt_len)
 
-    batch_size, num_heads, total_seq_len, _ = layer_attn.shape
-    print(f"[AttnProc] Layer {aggregation_layer} attention shape: {layer_attn.shape}")
+    batch_size, num_heads, query_seq_len, key_seq_len = layer_attn.shape
+    print(f"[AttnProc] Layer {aggregation_layer} attention tensor shape: {layer_attn.shape}")
 
     # --- Sanity check dimensions ---
-    expected_total_len = prompt_len + answer_len
-    if total_seq_len != expected_total_len:
-        print(f"[AttnProc] Warning: Attention seq len ({total_seq_len}) != prompt ({prompt_len}) + answer ({answer_len}). Clamping indices.")
-        # Adjust lengths cautiously, prioritize prompt
-        effective_prompt_len = min(prompt_len, total_seq_len)
-        effective_answer_len = min(answer_len, max(0, total_seq_len - effective_prompt_len)) # Ensure non-negative
-        if effective_prompt_len <= 0 or effective_answer_len <= 0:
-             print("[AttnProc] Error: Effective prompt or answer length is zero after clamping. Cannot process.")
-             return torch.zeros(prompt_len) # Return zeros matching original expected prompt length
+    expected_key_len = prompt_len + answer_len # Expected length of the context attended TO
+    if key_seq_len < expected_key_len:
+        print(f"[AttnProc] Warning: Attention key dim ({key_len}) < expected prompt+answer ({expected_key_len}). Using {key_len}.")
+        effective_prompt_len = min(prompt_len, key_seq_len)
+    elif key_seq_len > expected_key_len:
+        print(f"[AttnProc] Warning: Attention key dim ({key_len}) > expected prompt+answer ({expected_key_len}). Using expected len for slicing.")
+        effective_prompt_len = prompt_len
     else:
         effective_prompt_len = prompt_len
-        effective_answer_len = answer_len
 
-    prompt_indices = slice(0, effective_prompt_len)
-    answer_indices = slice(effective_prompt_len, effective_prompt_len + effective_answer_len)
-    print(f"[AttnProc] Effective prompt indices: {prompt_indices}, Effective answer indices: {answer_indices}")
+    prompt_key_indices = slice(0, effective_prompt_len)
+    print(f"[AttnProc] Effective prompt key indices: {prompt_key_indices}")
 
+    # --- NEW LOGIC ---
+    # If query dim is 1, assume it's the last token's attention we received
+    if query_seq_len == 1:
+        print("[AttnProc] Query sequence length is 1. Using attention from last token only.")
+        # Select attention FROM Last Token (Query=0) TO Prompt (Key)
+        # Shape: (batch_size, num_heads, 1, effective_prompt_len)
+        attn_last_token_to_prompt = layer_attn[:, :, 0, prompt_key_indices] # Query index is 0
 
-    # Select attention FROM Answer TO Prompt
-    # Shape: (batch_size, num_heads, effective_answer_len, effective_prompt_len)
-    attn_answer_to_prompt = layer_attn[:, :, answer_indices, prompt_indices]
-    print(f"[AttnProc] Attention Answer->Prompt shape: {attn_answer_to_prompt.shape}")
+        # We don't sum across answer tokens anymore, just use this directly
+        # Shape: (batch_size, num_heads, effective_prompt_len)
+        attn_received_by_prompt = attn_last_token_to_prompt.squeeze(2) # Remove the query dim of size 1
+        print(f"[AttnProc] Attention Received by Prompt Tokens (from last token) shape: {attn_received_by_prompt.shape}")
 
-    # Aggregate across Answer Tokens (Query Dimension: dim 2)
-    # Shape: (batch_size, num_heads, effective_prompt_len)
-    attn_received_by_prompt = attn_answer_to_prompt.sum(dim=2) # Sum across answer tokens
-    print(f"[AttnProc] Attention Received by Prompt Tokens (summed over answer tokens) shape: {attn_received_by_prompt.shape}")
+    # --- ORIGINAL LOGIC (Fallback, might still fail if query_seq_len > 1 but < answer_len) ---
+    else:
+        print(f"[AttnProc] Query sequence length is {query_seq_len}. Attempting original aggregation.")
+        # Indices corresponding to answer tokens in the *query* dimension
+        # This logic might be flawed if query_seq_len doesn't actually match answer_len
+        answer_query_start_idx = max(0, query_seq_len - answer_len)
+        answer_query_indices = slice(answer_query_start_idx, query_seq_len)
+        print(f"[AttnProc] Assuming answer query indices: {answer_query_indices}")
 
+        # Select attention FROM Answer (Query) TO Prompt (Key)
+        attn_answer_to_prompt = layer_attn[:, :, answer_query_indices, prompt_key_indices]
+        print(f"[AttnProc] Attention Answer->Prompt shape: {attn_answer_to_prompt.shape}")
+
+        # Aggregate across Answer Tokens (Query Dimension: dim 2)
+        attn_received_by_prompt = attn_answer_to_prompt.sum(dim=2)
+        print(f"[AttnProc] Attention Received by Prompt Tokens (summed) shape: {attn_received_by_prompt.shape}")
     # Aggregate across Heads (Dimension: dim 1)
     if aggregate_heads == 'mean':
         aggregated_scores_batch = attn_received_by_prompt.mean(dim=1)
