@@ -26,17 +26,26 @@
   </head>
   <body>
       <div class="container">
-          <h1>Attention Verification Report</h1>
+        <h1>Attention Verification Report</h1>
 
-          <div class="question">
-              <h2>Question</h2>
-              <p>Based on the Project Chimera Q3 update memo, what was the root cause identified for the temporal misalignment events involving the XR-7b sensor package?</p>
-          </div>
+        <div class="question">
+            <h2>Question</h2>
+            <p>Based on the Project Chimera Q3 update memo, what was the root cause identified for the temporal misalignment events involving the XR-7b sensor package?</p>
+        </div>
 
-          <div class="answer">
-              <h2>Model Answer</h2>
-              <p> The root cause identified for the temporal misalignment events involving the XR-7b sensor package was high atmospheric interference, which correlated with local weather patterns. This interference led to sub-second timestamp discrepancies between the optical and thermal sensor feeds.</p>
-          </div>
+        <div class="answer">
+            <h2>Model Answer</h2>
+            <p> The root cause identified for the temporal misalignment events was high atmospheric interference, particularly correlated with local weather patterns. Adjustments to the central clock synchronization protocol or revising the data interpolation algorithm used during fusion were proposed as potential mitigation strategies.</p>
+        </div>
+
+        <div class="nli-results">
+            <h2>Verification Score</h2>
+            <p><strong>NLI Judgment:</strong> ENTAILMENT</p>
+            <p><strong>Confidence Score (based on NLI):</strong> 0.90</p>
+            <p><small>(Score: 0.9=Entailment, 0.5=Neutral, 0.1=Contradiction, 0.0/N/A=Error/Not Run)</small></p>
+        </div>
+
+        <h2>Document Context with Evidence Highlighted</h2>
 
           <h2>Document Context with Evidence Highlighted</h2>
           <p><small>Sentences highlighted based on attention score (brighter = higher score). Up to 5 levels shown.</small></p>
@@ -54,11 +63,11 @@ While the overall data integrity remains high, these misalignments could potenti
                   
                       <li>[Score: 0.0655] However, analysis of the fused data logs from nodes 7, 9, and 11 revealed intermittent temporal misalignment events, particularly during periods of high atmospheric interference (correlated with local weather patterns).</li>
                   
-                      <li>[Score: 0.0637] Question: Based on the Project Chimera Q3 update memo, what was the root cause identified for the temporal misalignment events involving the XR-7b sensor package?</li>
+                      <li>[Score: 0.0631] Question: Based on the Project Chimera Q3 update memo, what was the root cause identified for the temporal misalignment events involving the XR-7b sensor package?</li>
                   
-                      <li>[Score: 0.0375] The engineering team&#39;s preliminary assessment suggests exploring adjustments to the central clock synchronization protocol or potentially revising the data interpolation algorithm used during fusion.</li>
+                      <li>[Score: 0.0373] The engineering team&#39;s preliminary assessment suggests exploring adjustments to the central clock synchronization protocol or potentially revising the data interpolation algorithm used during fusion.</li>
                   
-                      <li>[Score: 0.0326] We deployed the updated sensor package (Model XR-7b) across nodes 1 through 12 in the test environment.</li>
+                      <li>[Score: 0.0324] We deployed the updated sensor package (Model XR-7b) across nodes 1 through 12 in the test environment.</li>
                   
                       <li>[Score: 0.0316] Initial telemetry indicates successful data acquisition from 98% of nodes, exceeding the 95% target benchmark.</li>
                   
@@ -68,7 +77,7 @@ While the overall data integrity remains high, these misalignments could potenti
 
       <script>
           // Use Jinja2's |tojson filter to safely embed data
-          const evidenceData = [[0.06554937362670898, "However, analysis of the fused data logs from nodes 7, 9, and 11 revealed intermittent temporal misalignment events, particularly during periods of high atmospheric interference (correlated with local weather patterns)."], [0.0636606216430664, "Question: Based on the Project Chimera Q3 update memo, what was the root cause identified for the temporal misalignment events involving the XR-7b sensor package?"], [0.03751325607299805, "The engineering team\u0027s preliminary assessment suggests exploring adjustments to the central clock synchronization protocol or potentially revising the data interpolation algorithm used during fusion."], [0.032582759857177734, "We deployed the updated sensor package (Model XR-7b) across nodes 1 through 12 in the test environment."], [0.031613826751708984, "Initial telemetry indicates successful data acquisition from 98% of nodes, exceeding the 95% target benchmark."]];
+          const evidenceData = [[0.0655360221862793, "However, analysis of the fused data logs from nodes 7, 9, and 11 revealed intermittent temporal misalignment events, particularly during periods of high atmospheric interference (correlated with local weather patterns)."], [0.06312274932861328, "Question: Based on the Project Chimera Q3 update memo, what was the root cause identified for the temporal misalignment events involving the XR-7b sensor package?"], [0.03734111785888672, "The engineering team\u0027s preliminary assessment suggests exploring adjustments to the central clock synchronization protocol or potentially revising the data interpolation algorithm used during fusion."], [0.032385826110839844, "We deployed the updated sensor package (Model XR-7b) across nodes 1 through 12 in the test environment."], [0.031568050384521484, "Initial telemetry indicates successful data acquisition from 98% of nodes, exceeding the 95% target benchmark."]];
           const isPlaceholder = false;
           const MAX_HIGHLIGHT_LEVELS = 5; // Max number of distinct highlight colors
 

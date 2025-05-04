@@ -26,17 +26,26 @@
   </head>
   <body>
       <div class="container">
-          <h1>Attention Verification Report</h1>
+        <h1>Attention Verification Report</h1>
 
-          <div class="question">
-              <h2>Question</h2>
-              <p>{{ question }}</p>
-          </div>
+        <div class="question">
+            <h2>Question</h2>
+            <p>{{ question }}</p>
+        </div>
 
-          <div class="answer">
-              <h2>Model Answer</h2>
-              <p>{{ answer_text }}</p>
-          </div>
+        <div class="answer">
+            <h2>Model Answer</h2>
+            <p>{{ answer_text }}</p>
+        </div>
+
+        <div class="nli-results">
+            <h2>Verification Score</h2>
+            <p><strong>NLI Judgment:</strong> {{ nli_judgment }}</p>
+            <p><strong>Confidence Score (based on NLI):</strong> {{ confidence_score }}</p>
+            <p><small>(Score: 0.9=Entailment, 0.5=Neutral, 0.1=Contradiction, 0.0/N/A=Error/Not Run)</small></p>
+        </div>
+
+        <h2>Document Context with Evidence Highlighted</h2>
 
           <h2>Document Context with Evidence Highlighted</h2>
           <p><small>Sentences highlighted based on attention score (brighter = higher score). Up to 5 levels shown.</small></p>
