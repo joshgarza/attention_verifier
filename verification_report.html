@@ -16,11 +16,12 @@
           .evidence-list li { margin-bottom: 5px; }
           .highlight { padding: 0.1em 0; margin: -0.1em 0; line-height: 1.6; border-radius: 3px; }
           /* Define highlight colors - add more if needed */
-          .highlight-0 { background-color: #fff176; } /* Bright Yellow */
-          .highlight-1 { background-color: #ffee58; }
-          .highlight-2 { background-color: #ffeb3b; }
-          .highlight-3 { background-color: #fff59d; }
-          .highlight-4 { background-color: #fff9c4; } /* Faintest Yellow */
+          /* Define highlight colors - Red Gradient */
+          .highlight-0 { background-color: #ff8a80; } /* Bright Red/Coral */
+          .highlight-1 { background-color: #ffab91; } /* Lighter Red/Orange */
+          .highlight-2 { background-color: #ffccbc; } /* Even Lighter Peach/Red */
+          .highlight-3 { background-color: #ffe0b2; } /* Faint Orange/Peach */
+          .highlight-4 { background-color: #fff3e0; } /* Faintest Orange/Beige */
           .placeholder { color: #888; font-style: italic; }
       </style>
   </head>
@@ -59,19 +60,19 @@ While the overall data integrity remains high, these misalignments could potenti
 
           <h2>Top Evidence Sentences (Ranked by Attention)</h2>
           <ol class="evidence-list">
-              
-                  
+
+
                       <li>[Score: 0.0697] Question: Based on the Project Chimera Q3 update memo, what was the root cause identified for the temporal misalignment events involving the XR-7b sensor package?</li>
-                  
+
                       <li>[Score: 0.0688] However, analysis of the fused data logs from nodes 7, 9, and 11 revealed intermittent temporal misalignment events, particularly during periods of high atmospheric interference (correlated with local weather patterns).</li>
-                  
+
                       <li>[Score: 0.0396] The engineering team&#39;s preliminary assessment suggests exploring adjustments to the central clock synchronization protocol or potentially revising the data interpolation algorithm used during fusion.</li>
-                  
+
                       <li>[Score: 0.0348] We deployed the updated sensor package (Model XR-7b) across nodes 1 through 12 in the test environment.</li>
-                  
+
                       <li>[Score: 0.0327] While the overall data integrity remains high, these misalignments could potentially impact downstream real-time decision algorithms.</li>
-                  
-              
+
+
           </ol>
       </div>
 

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Attention Verification Report</title>
+      <style>
+          body { font-family: sans-serif; line-height: 1.6; padding: 20px; }
+          .container { max-width: 900px; margin: auto; background: #f9f9f9; padding: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+          h1, h2 { color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px;}
+          .question, .answer { padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+          .question { background-color: #e7f3fe; border-left: 5px solid #2196F3; }
+          .answer { background-color: #e8f5e9; border-left: 5px solid #4CAF50; }
+          .document { background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; white-space: pre-wrap; /* Preserve whitespace */ word-wrap: break-word; margin-top: 20px; font-family: monospace; }
+          .evidence-list { margin-top: 20px; padding-left: 20px; }
+          .evidence-list li { margin-bottom: 5px; }
+          .highlight { padding: 0.1em 0; margin: -0.1em 0; line-height: 1.6; border-radius: 3px; }
+          /* Define highlight colors - add more if needed */
+          .highlight-0 { background-color: #fff176; } /* Bright Yellow */
+          .highlight-1 { background-color: #ffee58; }
+          .highlight-2 { background-color: #ffeb3b; }
+          .highlight-3 { background-color: #fff59d; }
+          .highlight-4 { background-color: #fff9c4; } /* Faintest Yellow */
+          .placeholder { color: #888; font-style: italic; }
+      </style>
+  </head>
+  <body>
+      <div class="container">
+        <h1>Attention Verification Report</h1>
+
+        <div class="question">
+            <h2>Question</h2>
+            <p>What did Leo put in his pocket?</p>
+        </div>
+
+        <div class="answer">
+            <h2>Model Answer</h2>
+            <p> A special stone that he found near the edge of the path. It was smooth and grey, with tiny flecks that glittered when the light hit them just right.</p>
+        </div>
+
+        <div class="nli-results">
+            <h2>Verification Score</h2>
+            <p><strong>NLI Judgment:</strong> (&#39;CONTRADICTION&#39;, &#39;To determine the relationship between the Premise and the Hypothesis, let\&#39;s analyze the information given in both.\n\nThe Premise describes a scene where a character has already found a &#34;special stone&#34; which he puts into his pocket before continuing his walk. The stone is described as &#34;smooth and grey, with tiny flecks that glittered when the light hit them just right.&#34; As he walks, he notices another sparkle near the edge of the path.\n\nThe Hypothesis states that &#34;A special stone that he found near the edge of the path. It was smooth and grey, with tiny flecks that glittered when the light hit them just right.&#34;\n\nLet\&#39;s examine the details:\n\n1. The Premise mentions that the character had already found a special stone before he started walking down the path. This stone is described with the same characteristics as the one in the Hypothesis.\n2. The Hypothesis suggests that the special stone was found near the edge of the path, which aligns with the Premise where it is mentioned that &#34;his eyes caught a little sparkle near the edge of the path&#34; as he walked.\n\nHowever, the Premise does not directly state that the sparkle near the edge of the path was a stone or that it was the same type as the one he had already found. But it implies a sequence of events where he first finds a stone, then continues walking and notices another potential find.\n\nThe key is understanding whether the Hypothesis is talking about the same stone or a different one. The Premise describes finding a stone before walking down the path and then noticing a sparkle (potentially another stone) during the walk.\n\nThe Hypothesis could be interpreted in two ways:\n- If it refers to the first stone, it contradicts the Premise because the Premise implies the first stone was found before he went down the path, not near the edge of it.\n- If it refers to the sparkle noticed near the edge of the path, the Premise does not explicitly confirm it was a stone or that it had the same characteristics, though it is suggestive.\n\nGiven the information and focusing strictly on the details provided:\n- The Hypothesis describes a scenario (finding a stone near the edge of the path with specific characteristics) that is not directly entailed by the Premise because the Premise does not confirm that the sparkle was a stone or that it matched the description given.\n- It does not directly contradict the Premise either since the Premise does not rule out finding another stone near the path.\n\nHowever, upon closer inspection, the most accurate interpretation is that the Hypothesis is not directly supported or refuted by the Premise due to the ambiguity around whether the Hypothesis refers to the first stone or a potential second stone. The Premise does not explicitly state that the sparkle was a stone, so we cannot confirm the Hypothesis based on the given information.\n\nTherefore, the Hypothesis is NEUTRAL with respect to the Premise because it doesn\&#39;t directly follow from or contradict the information given in the Premise.\n\nThe final answer is: NEUTRAL&#39;)</p>
+            <p><strong>Confidence Score (based on NLI):</strong> 0.00</p>
+            <p><small>(Score: 0.9=Entailment, 0.5=Neutral, 0.1=Contradiction, 0.0/N/A=Error/Not Run)</small></p>
+        </div>
+
+        <div class="nli-results" style="background-color: #f5f5f5; border-left: 5px solid #bdbdbd; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+            <h2>Verification Score</h2>
+            <p><strong>NLI Judgment:</strong> (&#39;CONTRADICTION&#39;, &#39;To determine the relationship between the Premise and the Hypothesis, let\&#39;s analyze the information given in both.\n\nThe Premise describes a scene where a character has already found a &#34;special stone&#34; which he puts into his pocket before continuing his walk. The stone is described as &#34;smooth and grey, with tiny flecks that glittered when the light hit them just right.&#34; As he walks, he notices another sparkle near the edge of the path.\n\nThe Hypothesis states that &#34;A special stone that he found near the edge of the path. It was smooth and grey, with tiny flecks that glittered when the light hit them just right.&#34;\n\nLet\&#39;s examine the details:\n\n1. The Premise mentions that the character had already found a special stone before he started walking down the path. This stone is described with the same characteristics as the one in the Hypothesis.\n2. The Hypothesis suggests that the special stone was found near the edge of the path, which aligns with the Premise where it is mentioned that &#34;his eyes caught a little sparkle near the edge of the path&#34; as he walked.\n\nHowever, the Premise does not directly state that the sparkle near the edge of the path was a stone or that it was the same type as the one he had already found. But it implies a sequence of events where he first finds a stone, then continues walking and notices another potential find.\n\nThe key is understanding whether the Hypothesis is talking about the same stone or a different one. The Premise describes finding a stone before walking down the path and then noticing a sparkle (potentially another stone) during the walk.\n\nThe Hypothesis could be interpreted in two ways:\n- If it refers to the first stone, it contradicts the Premise because the Premise implies the first stone was found before he went down the path, not near the edge of it.\n- If it refers to the sparkle noticed near the edge of the path, the Premise does not explicitly confirm it was a stone or that it had the same characteristics, though it is suggestive.\n\nGiven the information and focusing strictly on the details provided:\n- The Hypothesis describes a scenario (finding a stone near the edge of the path with specific characteristics) that is not directly entailed by the Premise because the Premise does not confirm that the sparkle was a stone or that it matched the description given.\n- It does not directly contradict the Premise either since the Premise does not rule out finding another stone near the path.\n\nHowever, upon closer inspection, the most accurate interpretation is that the Hypothesis is not directly supported or refuted by the Premise due to the ambiguity around whether the Hypothesis refers to the first stone or a potential second stone. The Premise does not explicitly state that the sparkle was a stone, so we cannot confirm the Hypothesis based on the given information.\n\nTherefore, the Hypothesis is NEUTRAL with respect to the Premise because it doesn\&#39;t directly follow from or contradict the information given in the Premise.\n\nThe final answer is: NEUTRAL&#39;)</p>
+            <p><strong>Confidence Score (based on NLI):</strong> 0.00</p>
+            <p><small>(Score: 0.9=Entailment, 0.5=Neutral, 0.1=Contradiction, 0.0/N/A=Error/Not Run)</small></p>
+            <hr style="margin: 15px 0;">
+            <!-- Add Reasoning Section -->
+            <details>
+                <summary style="cursor: pointer; font-weight: bold;">Show NLI Reasoning</summary>
+                <pre style="white-space: pre-wrap; word-wrap: break-word; background-color: #eee; padding: 10px; margin-top: 10px; border-radius: 4px;">(NLI check not performed)</pre>
+            </details>
+            <!-- End Reasoning Section -->
+        </div>
+
+          <h2>Document Context with Evidence Highlighted</h2>
+          <p><small>Sentences highlighted based on attention score (brighter = higher score). Up to 5 levels shown.</small></p>
+          <div id="document-content" class="document">Leo was a boy who liked looking closely at things. One sunny afternoon, the birds were singing, and a gentle breeze stirred the leaves. &#34;It&#39;s a good day for a walk,&#34; Leo thought. He went out the back door and started down the dusty path that led into the small woods behind his house.
+
+The sunlight made patterns on the ground. Leo kicked a small pebble and watched it skitter away. He looked at the tall trees and the moss growing on an old log. As he walked, his eyes caught a little sparkle near the edge of the path.
+
+He bent down. Partially hidden under a leaf was a stone. It wasn&#39;t like the other rough pebbles. This one was smooth and grey, with tiny flecks that glittered when the light hit them just right. It felt cool and solid in his hand. Leo smiled. He put the special stone carefully into his pocket and continued his walk, happy with his small discovery.</div>
+
+          <h2>Top Evidence Sentences (Ranked by Attention)</h2>
+          <ol class="evidence-list">
+              
+                  
+                      <li>[Score: 0.0447] He put the special stone carefully into his pocket and continued his walk, happy with his small discovery.</li>
+                  
+                      <li>[Score: 0.0415] This one was smooth and grey, with tiny flecks that glittered when the light hit them just right.</li>
+                  
+                      <li>[Score: 0.0352] He went out the back door and started down the dusty path that led into the small woods behind his house.</li>
+                  
+                      <li>[Score: 0.0319] One sunny afternoon, the birds were singing, and a gentle breeze stirred the leaves.</li>
+                  
+                      <li>[Score: 0.0319] As he walked, his eyes caught a little sparkle near the edge of the path.</li>
+                  
+              
+          </ol>
+      </div>
+
+      <script>
+          // Use Jinja2's |tojson filter to safely embed data
+          const evidenceData = [[0.044693946838378906, "He put the special stone carefully into his pocket and continued his walk, happy with his small discovery."], [0.04146385192871094, "This one was smooth and grey, with tiny flecks that glittered when the light hit them just right."], [0.03516101837158203, "He went out the back door and started down the dusty path that led into the small woods behind his house."], [0.03194904327392578, "One sunny afternoon, the birds were singing, and a gentle breeze stirred the leaves."], [0.03191947937011719, "As he walked, his eyes caught a little sparkle near the edge of the path."]];
+          const isPlaceholder = false;
+          const MAX_HIGHLIGHT_LEVELS = 5; // Max number of distinct highlight colors
+
+          function escapeRegex(string) {
+              // Escape characters that have special meaning in regex
+              return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          }
+
+          function highlightSentences() {
+              const docElement = document.getElementById('document-content');
+              if (!docElement || !evidenceData || isPlaceholder) {
+                  console.log("Highlighting skipped: No element, data, or placeholder found.");
+                  return;
+              }
+
+              let docHTML = docElement.innerHTML;
+
+              // Sort by score descending to apply highlights in order
+              evidenceData.sort((a, b) => b[0] - a[0]);
+
+              const appliedHighlights = []; // Keep track of highlighted ranges [start, end]
+
+              evidenceData.forEach((item, index) => {
+                  const score = item[0];
+                  const sentence = item[1]?.trim(); // Trim whitespace for better matching
+                  const highlightLevel = Math.min(index, MAX_HIGHLIGHT_LEVELS - 1);
+
+                  if (!sentence) return; // Skip if sentence is empty
+
+                  try {
+                      // Create a regex to find the sentence, ensuring it's not already inside a span
+                      // This is tricky. A simpler approach for hackathon: find all, then filter overlaps.
+                      const escapedSentence = escapeRegex(sentence);
+                      const regex = new RegExp(escapedSentence, 'g'); // Global search
+                      let match;
+                      let currentDocHTML = docHTML; // Work on a temporary string for replacements
+                      let newDocHTML = "";
+                      let lastIndex = 0;
+
+                      // Find all potential matches
+                      const potentialMatches = [];
+                      while ((match = regex.exec(docElement.textContent)) !== null) {
+                          // Store start/end based on textContent indices - careful, this might not map perfectly to HTML indices!
+                          // A better way would be to search the HTML string itself, but that's complex with existing tags.
+                          // For simplicity, let's try replacing in the HTML string cautiously.
+                          potentialMatches.push({ index: match.index, length: match[0].length });
+                      }
+
+
+                      // Attempt replacement in HTML string (less robust, might break tags)
+                      // It's generally safer to manipulate the DOM directly, but harder.
+                      // Let's try a simpler approach: replace first available match.
+                      let replaced = false;
+                      let searchStartIndex = 0;
+                      while(!replaced){
+                          const matchIndex = docHTML.indexOf(sentence, searchStartIndex);
+                          if (matchIndex === -1) break; // Not found anymore
+
+                          const matchEnd = matchIndex + sentence.length;
+
+                          // Check for overlap with existing highlights
+                          let overlaps = false;
+                          for(const [start, end] of appliedHighlights){
+                              if (matchIndex < end && matchEnd > start) {
+                                  overlaps = true;
+                                  break;
+                              }
+                          }
+
+                          if (!overlaps) {
+                              const spanStart = `<span class="highlight highlight-${highlightLevel}">`;
+                              const spanEnd = `</span>`;
+                              docHTML = docHTML.substring(0, matchIndex) +
+                                          spanStart +
+                                          docHTML.substring(matchIndex, matchEnd) +
+                                          spanEnd +
+                                          docHTML.substring(matchEnd);
+
+                              // Record the *new* boundaries considering the added span tags
+                              // Adjust indices for subsequent searches/checks
+                              const addedLength = spanStart.length + spanEnd.length;
+                              appliedHighlights.push([matchIndex, matchEnd + addedLength]);
+                              // Adjust other highlight boundaries if needed
+                              for(let j=0; j < appliedHighlights.length -1; j++){
+                                  if(appliedHighlights[j][0] >= matchIndex) appliedHighlights[j][0] += addedLength;
+                                  if(appliedHighlights[j][1] > matchIndex) appliedHighlights[j][1] += addedLength;
+                              }
+                              // Sort appliedHighlights by start index for overlap check
+                              appliedHighlights.sort((a,b) => a[0] - b[0]);
+
+                              replaced = true; // Only highlight first non-overlapping occurrence for simplicity
+                              break; // Exit inner loop once replaced for this sentence
+                          } else {
+                              // Found an overlap, search for next occurrence
+                              searchStartIndex = matchIndex + 1;
+                          }
+                      }
+
+
+                  } catch (e) {
+                      console.error("Error applying highlight for sentence:", sentence, e);
+                  }
+              });
+
+              // Update the document content with highlights
+              docElement.innerHTML = docHTML;
+          }
+
+          // Run highlighting when the page content is loaded
+          document.addEventListener('DOMContentLoaded', highlightSentences);
+      </script>
+  </body>
+</html>

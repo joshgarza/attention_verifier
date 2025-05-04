@@ -12,6 +12,7 @@ import config
 from src.data_loader import load_document # Keep this if loading from file path later
 from src.model_handler import load_model_and_tokenizer, get_answer_and_attention # Llama 3 NLI
 from src.llama4_api_client import get_nli_judgment_via_api # Llama 4 API NLI
+from src.nli_checker import get_nli_judgment
 from src.tokenizer_utils import prepare_tokenizer_info_for_attention
 from src.attention_processor import find_evidence_spans
 from src.output_formatter import generate_html_report
@@ -24,7 +25,7 @@ if not os.path.exists(REPORTS_DIR):
 
 # --- Flask App Setup ---
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-here-for-hackathon'
+# app.config['SECRET_KEY'] = 'your-secret-key-here-for-hackathon'
 
 # --- Global Variables for Model/Tokenizer ---
 # These will be loaded once on startup
@@ -213,8 +214,9 @@ def handle_grade_response():
             if model_global:
                  try:
                      nli_judgment, nli_reasoning = get_nli_judgment_via_api(
-                premise=" ".join(evidence_texts),
-                hypothesis=answer_text
+                      premise=" ".join(evidence_texts),
+                      hypothesis=answer_text
+                     )
                  except Exception as e:
                       print(f"Error during local NLI check: {e}")
                       nli_judgment = f"ERROR ({e})"
